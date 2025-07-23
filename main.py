@@ -1,6 +1,7 @@
 import torch
 from DataTools import WaveDataReader
-x = torch.rand(5, 3)
-print(x)
+from NeuralNetwork import Model
 
+TestModel = Model(448)
+Model.ReadAndTrain(TestModel,*WaveDataReader())
 #.venv\Scripts\Activate.ps1
