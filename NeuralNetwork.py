@@ -14,4 +14,4 @@ class Model(NeuralNetwork.Module):
         Node = Functional.relu(self.BridgeH1toH2)
         Node = self.BridgeH2toOut(Node)
 
-    
+        return Node
