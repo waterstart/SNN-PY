@@ -3,31 +3,35 @@ import torch.nn as NeuralNetwork
 import torch.nn.functional as Functional
 from sklearn.model_selection import train_test_split
 import torch.optim.adam 
+import matplotlib.pyplot as plt
+
 class Model(NeuralNetwork.Module):
-    def __init__(self, NumNodes, HidLayer1 = 64,HidLayer2 = 32, OutLayer=5):
+    def __init__(self, NumNodes, HidLayer1 = 128,HidLayer2 = 64,HidLayer3 = 32, OutLayer=5):
         super().__init__()
         self.BridgeNto1 = NeuralNetwork.Linear(NumNodes,HidLayer1)
         self.BridgeH1toH2 = NeuralNetwork.Linear(HidLayer1,HidLayer2)
-        self.BridgeH2toOut = NeuralNetwork.Linear(HidLayer2,OutLayer)
+        self.BridgeH2toH3 = NeuralNetwork.Linear(HidLayer2,HidLayer3)
+        self.BridgeH2toOut = NeuralNetwork.Linear(HidLayer3,OutLayer)
     
     def Forward(self,Node):
         Node = Functional.relu(self.BridgeNto1(Node)) 
         Node = Functional.relu(self.BridgeH1toH2(Node))
+        Node = Functional.relu(self.BridgeH2toH3(Node))
         Node = self.BridgeH2toOut(Node)
 
         return Node
     
     def ReadAndTrain(self, FeatureSet,AnswerSet):
            ModelCriterion = NeuralNetwork.MSELoss()
-           ModelOptimiser = torch.optim.Adam(self.parameters(), lr=0.0001, weight_decay=1e-4)
-           EpochAmount = 10000000000000
+           ModelOptimiser = torch.optim.Adam(self.parameters(), lr=0.1, weight_decay=1e-4)
+           EpochAmount = 10e+5
            Losses = []
    
 
 
            for FeatureList, AnswerList in zip(FeatureSet, AnswerSet):
 
-            FeatureTest,FeatureTrain,AnswerTest,AnswerTrain = train_test_split(FeatureList,AnswerList,test_size=0.2)
+            FeatureTest,FeatureTrain,AnswerTest,AnswerTrain = train_test_split(FeatureList.to_numpy(),AnswerList.to_numpy(),test_size=0.2)
            
 
             FeatureTrain =  torch.FloatTensor(FeatureTrain)
@@ -49,8 +53,37 @@ class Model(NeuralNetwork.Module):
                 Loss.backward()
                 ModelOptimiser.step()
 
+            plt.plot(range(EpochAmount), Losses)
+            plt.ylabel("loss/error")
+            plt.xlabel('Epoch')
+            
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error, r2_score
+class TreeModel():
+     def ReadAndTrain(self,FeatureSet,AnswerSet):
+       
+   
+
+
+           for FeatureList, AnswerList in zip(FeatureSet, AnswerSet):
+
+            FeatureTrain, FeatureTest, AnswerTrain, AnswerTest = train_test_split(FeatureList,AnswerList,random_state=17,test_size=0.2)
+            print("feature list: ",type(FeatureList))
+            print("Answer list: ", type(AnswerList))
+
+            RFC =RandomForestRegressor(n_estimators=500)
+            RFC.fit(FeatureTrain,AnswerTrain)
+            AnswerPred = RFC.predict(FeatureTest)
+            RFC.score(FeatureTest,AnswerTest)
+
+            MeanScoreError = mean_squared_error(AnswerTest, AnswerPred)
+            print("error squared bro please: ",MeanScoreError)
+
             
 
+         
+
+            
             
             
            

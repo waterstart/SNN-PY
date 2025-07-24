@@ -18,10 +18,10 @@ def WaveDataReader():
                  try:
                      float(Feature)
                  except ValueError:
-                      TrainingDataFeatures = TrainingData.iloc[1:,:index].to_numpy()
+                      TrainingDataFeatures = TrainingData.iloc[1:,:index]
 
                       FeatureSet.append(TrainingDataFeatures)
-                      AnswerDataFeatures = (TrainingData.iloc[1:, index:].apply(pd.to_numeric, errors='coerce')).to_numpy()
+                      AnswerDataFeatures = TrainingData.iloc[1:, index:]
 
                       AnswerSet.append(AnswerDataFeatures)
                       break                

@@ -1,7 +1,7 @@
 import torch
 from DataTools import WaveDataReader
-from NeuralNetwork import Model
+from RandomForest import TreeModel
 
-TestModel = Model(448)
-Model.ReadAndTrain(TestModel,*WaveDataReader())
+TestModel = TreeModel()
+TestModel.ReadAndTrain(*WaveDataReader())
 #.venv\Scripts\Activate.ps1
