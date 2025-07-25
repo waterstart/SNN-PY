@@ -18,10 +18,10 @@ def WaveDataReader():
                  try:
                      float(Feature)
                  except ValueError:
-                      TrainingDataFeatures = TrainingData.iloc[1:,:index]
-
+                      TrainingDataFeatures = torch.tensor(TrainingData.iloc[1:,:index].to_numpy())
+                      print("heres the error ehre  i am!")
                       FeatureSet.append(TrainingDataFeatures)
-                      AnswerDataFeatures = TrainingData.iloc[1:, index:]
+                      AnswerDataFeatures = torch.tensor(TrainingData.iloc[1:, index:].apply(pd.to_numeric, errors='coerce').to_numpy())
 
                       AnswerSet.append(AnswerDataFeatures)
                       break                

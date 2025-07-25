@@ -5,6 +5,33 @@ from sklearn.model_selection import train_test_split
 import torch.optim.adam 
 import matplotlib.pyplot as plt
 
+class AutoEncoder(NeuralNetwork.Module):
+    def __init__(self,NumNodes, LatentDimensions = 32):
+        super().__init__()
+        Layers = []
+
+
+        while NumNodes > 128:
+            NumNodes_Half = NumNodes // 2
+            if(NumNodes_Half % 2 != 0):
+                NumNodes_Half-=1
+            Layers.append(NeuralNetwork.Linear(NumNodes,NumNodes_Half))
+            Layers.append(NeuralNetwork.ReLU())
+            NumNodes=NumNodes_Half
+        
+        self.Encoder = NeuralNetwork.Sequential(*Layers)
+
+    def forward(self,InputData):
+            return self.Encoder(InputData)
+
+
+
+
+            
+
+       
+
+
 class Model(NeuralNetwork.Module):
     def __init__(self, NumNodes, HidLayer1 = 128,HidLayer2 = 64,HidLayer3 = 32, OutLayer=5):
         super().__init__()
@@ -13,7 +40,7 @@ class Model(NeuralNetwork.Module):
         self.BridgeH2toH3 = NeuralNetwork.Linear(HidLayer2,HidLayer3)
         self.BridgeH2toOut = NeuralNetwork.Linear(HidLayer3,OutLayer)
     
-    def Forward(self,Node):
+    def forward(self,Node):
         Node = Functional.relu(self.BridgeNto1(Node)) 
         Node = Functional.relu(self.BridgeH1toH2(Node))
         Node = Functional.relu(self.BridgeH2toH3(Node))
@@ -31,7 +58,7 @@ class Model(NeuralNetwork.Module):
 
            for FeatureList, AnswerList in zip(FeatureSet, AnswerSet):
 
-            FeatureTest,FeatureTrain,AnswerTest,AnswerTrain = train_test_split(FeatureList.to_numpy(),AnswerList.to_numpy(),test_size=0.2)
+            FeatureTrain, FeatureTest, AnswerTrain, AnswerTest = train_test_split(FeatureList.to_numpy(),AnswerList.to_numpy(),test_size=0.1)
            
 
             FeatureTrain =  torch.FloatTensor(FeatureTrain)
